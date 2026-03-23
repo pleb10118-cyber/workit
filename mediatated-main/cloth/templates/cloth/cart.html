@@ -1,0 +1,33 @@
+{% extends 'main.html' %}
+{% block content %}
+<h1>Your Cart</h1>
+
+{% if cart_lines %}
+	{% for line in cart_lines %}
+		<div>
+			<h3>{{ line.item.product.name }}</h3>
+			<p>Price: {{ line.item.product.price }}</p>
+			<p>In stock: {{ line.item.product.stock }}</p>
+
+			<form method="POST" action="{% url 'update-cart-item' line.item.id %}">
+				{% csrf_token %}
+				<label>Quantity</label>
+				<input type="number" name="quantity" min="0" value="{{ line.item.quantity }}" required>
+				<button type="submit">Update</button>
+			</form>
+
+			<form method="POST" action="{% url 'remove-cart-item' line.item.id %}">
+				{% csrf_token %}
+				<button type="submit">Remove</button>
+			</form>
+
+			<p>Line total: {{ line.line_total }}</p>
+		</div>
+		<hr>
+	{% endfor %}
+
+	<h2>Grand total: {{ total }}</h2>
+{% else %}
+	<p>Your cart is empty.</p>
+{% endif %}
+{% endblock content %}
