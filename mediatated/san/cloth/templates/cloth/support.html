@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/support.css' %}">
+{% endblock head %}
+{% block content %}
+<h1 class="support-title">Customer Support</h1>
+<h2 class="support-subtitle">Feel free to reach out to us for any problems.</h2>
+
+<div class="feedback">
+    <h3>Tell us about your problem</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="submit-button">
+            <button type="submit">Submit Issue</button>
+        </div>
+    </form>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+{% endif %}
+
+{% endblock content %}

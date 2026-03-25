@@ -1,0 +1,30 @@
+h1 {
+	text-align: center;
+	margin-top: 24px;
+}
+
+form {
+	max-width: 420px;
+	margin: 24px auto;
+	padding: 20px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	background: #fff;
+}
+
+label {
+	display: block;
+	margin: 10px 0 6px;
+}
+
+input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 10px;
+}
+
+button {
+	display: block;
+	margin: 18px auto 0;
+	padding: 10px 16px;
+}

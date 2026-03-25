@@ -1,0 +1,20 @@
+.support-title {
+	text-align: center;
+}
+
+.support-subtitle {
+	text-align: center;
+}
+
+.feedback {
+	max-width: 500px;
+	margin: 30px auto;
+	padding: 20px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+}
+
+.submit-button {
+	margin-top: 12px;
+	padding-left: 180px;
+}

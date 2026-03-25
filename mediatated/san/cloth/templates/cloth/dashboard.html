@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/dashboard.css' %}">
+{% endblock head %}
+{% block content %}
+<h1>Retailer Dashboard</h1>
+
+<h2>Add Product</h2>
+<form method="POST" action="{% url 'dashboard' %}">
+	{% csrf_token %}
+	<input type="hidden" name="action" value="create_product">
+	<input type="text" name="name" placeholder="Product name" required>
+	<input type="number" step="0.01" min="0" name="price" placeholder="Price" required>
+	<input type="number" min="0" name="stock" placeholder="Stock" required>
+	<button type="submit">Create Product</button>
+</form>
+
+<h2>Your Products</h2>
+{% if products %}
+	{% for product in products %}
+		<div>
+			<h3>{{ product.name }}</h3>
+			<p>Price: £{{ product.price }}</p>
+			<p>Current stock: {{ product.stock }}</p>
+
+			<form method="POST" action="{% url 'dashboard' %}">
+				{% csrf_token %}
+				<input type="hidden" name="action" value="update_stock">
+				<input type="hidden" name="product_id" value="{{ product.id }}">
+				<input type="number" min="0" name="stock" value="{{ product.stock }}" required>
+				<button type="submit">Update Stock</button>
+			</form>
+		</div>
+		<hr>
+	{% endfor %}
+{% else %}
+	<p>You have no products listed.</p>
+{% endif %}
+{% endblock content %}
