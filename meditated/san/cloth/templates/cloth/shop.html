@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/shop.css' %}">
+{% endblock head %}
+{% block content %}
+<h1>Shop</h1>
+<h2>Browse and search for products</h2>
+
+{% if products %}
+	<div class="heading">
+		{% for product in products %}
+			<div class="names">
+				<h3>{{ product.name }}</h3>
+				<p>
+					Sold by:
+					{% if product.seller.first_name or product.seller.last_name %}
+						{{ product.seller.first_name }} {{ product.seller.last_name }}
+					{% else %}
+						{{ product.seller.username }}
+					{% endif %}
+				</p>
+				<p>Price: £{{ product.price }}</p>
+				<p>Stock: {{ product.stock }}</p>
+
+				{% if product.stock > 0 %}
+					<form method="POST" action="{% url 'add-to-cart' product.id %}">
+						{% csrf_token %}
+						<input class="number" type="number" name="quantity" min="1" value="1">
+						<button type="submit">Add to Cart</button>
+					</form>
+				{% else %}
+					<p>Out of stock</p>
+				{% endif %}
+			</div>
+
+		{% endfor %}
+	</div>
+{% else %}
+	<p>No items listed</p>
+{% endif %}
+{% endblock content %}

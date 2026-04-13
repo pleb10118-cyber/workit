@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/sellers.css' %}">
+{% endblock head %}
+{% block content %}
+<section>
+	<h1>Seller Profiles</h1>
+	<p>Meet verified sellers from Cole Cloth Shop.</p>
+
+	{% if sellers %}
+		<div class="heading">
+			{% for seller in sellers %}
+				<article class="names">
+					<h2>
+						{% if seller.first_name or seller.last_name %}
+							{{ seller.first_name }} {{ seller.last_name }}
+						{% else %}
+							{{ seller.username }}
+						{% endif %}
+					</h2>
+					<p><strong>Username:</strong> {{ seller.username }}</p>
+					{% if seller.email %}
+						<p><strong>Email:</strong> {{ seller.email }}</p>
+					{% endif %}
+					<p>
+						<a href="{% url 'seller-shop' seller.id %}">View items from this seller</a>
+					</p>
+				</article>
+			{% endfor %}
+		</div>
+	{% else %}
+		<p>No sellers have signed up yet.</p>
+	{% endif %}
+</section>
+{% endblock content %}

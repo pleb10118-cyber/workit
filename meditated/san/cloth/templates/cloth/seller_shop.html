@@ -1,0 +1,50 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/seller_shop.css' %}">
+{% endblock head %}
+{% block content %}
+<section>
+    <h1>
+        {% if seller.first_name or seller.last_name %}
+            {{ seller.first_name }} {{ seller.last_name }}
+        {% else %}
+            {{ seller.username }}
+        {% endif %}
+    </h1>
+    <p>Items currently available from this seller.</p>
+
+    {% if products %}
+        <ul class="heading">
+            {% for product in products %}
+                <li class="names">
+                    <p>{{ product.name }} - ${{ product.price }} (Stock: {{ product.stock }})</p>
+                    {% if product.stock > 0 %}
+                        <form method="post" action="{% url 'add-to-cart' product.id %}">
+                            {% csrf_token %}
+                            <label for="quantity-{{ product.id }}">Quantity:</label>
+                            <input
+                                id="quantity-{{ product.id }}"
+                                name="quantity"
+                                type="number"
+                                min="1"
+                                max="{{ product.stock }}"
+                                class="number"
+                                value="1"
+                                required
+                            >
+                            <button type="submit">Add to cart</button>
+                        </form>
+                    {% else %}
+                        <p>Out of stock.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>This seller has no items in stock right now.</p>
+    {% endif %}
+
+    <p><a href="{% url 'sellers' %}">Back to sellers</a></p>
+</section>
+{% endblock content %}
