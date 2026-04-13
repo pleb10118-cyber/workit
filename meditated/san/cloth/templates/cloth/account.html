@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/account.css' %}">
+{% endblock head %}
+{% block content %}
+<h1>Your Account</h1>
+<section class="loyalty-card">
+    <h2>Loyalty Points</h2>
+    <p>Balance: 0</p>
+</section>
+<form method="POST" action="">
+    {% csrf_token %}
+    <label>Username</label>
+	<input name="username" value="{{ user.username }}" required/>
+    <label>First Name</label>
+    <input name='first_name' value="{{user.first_name }}" placeholder="Enter first name"/>
+    <label>Last Name</label>
+    <input name="last_name" value="{{ user.last_name }}" placeholder="Enter last name"/>
+    <label>Email</label>
+    <input type="email" name="email" value="{{ user.email }}" placeholder="Enter email"/>
+    <button type="submit">Save changes</button>
+</form>
+{% endblock content %}
