@@ -1,0 +1,41 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/cart.css' %}">
+{% endblock head %}
+{% block content %}
+<h1>Your Cart</h1>
+
+{% if cart_items %}
+	<div class="heading">
+		{% for item in cart_items %}
+			<div class="names">
+				<h3>{{ item.product.name }}</h3>
+				<p>Price: £{{ item.product.price }}</p>
+				<p>In stock: {{ item.product.stock }}</p>
+
+				<form class="update" method="POST" action="{% url 'update-cart-item' item.item_id %}">
+					{% csrf_token %}
+					<label for="quantity-{{ item.item_id }}">Quantity</label>
+					<input class="input" id="quantity-{{ item.item_id }}" type="number" name="quantity" min="0" value="{{ item.quantity }}" required>
+					<button type="submit">Update</button>
+				</form>
+
+				<form method="POST" action="{% url 'remove-cart-item' item.item_id %}">
+					{% csrf_token %}
+					<button type="submit">Remove</button>
+				</form>
+
+				<p>Item total: £{{ item.item_total }}</p>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div class="cart-summary">
+		<h2 class="total">Grand total: £{{ total }}</h2>
+		<button type="button">Checkout</button>
+	</div>
+{% else %}
+	<p>Your cart is empty.</p>
+{% endif %}
+{% endblock content %}

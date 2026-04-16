@@ -1,0 +1,237 @@
+# models
+class Product(models.Model):
+	seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+	name = models.CharField(max_length=150)
+	image = models.ImageField(upload_to='products/', blank=True, null=True)
+	price = models.DecimalField(max_digits=15, decimal_places=2, validators=[MinValueValidator(0)])
+	stock = models.PositiveIntegerField(default=0)
+	active = models.BooleanField(default=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+    # views
+def dashboard(request):
+    profile, profiled = Profile.objects.get_or_create(user=request.user)
+    if not profile.is_seller:
+        messages.error(request, 'Only sellers have access.')
+        return redirect('home')
+
+    if request.method == 'POST':
+        sent = request.POST.get('sent')
+
+        if sent == 'create_product':
+            name = request.POST.get('name', '').strip()
+            price_input = request.POST.get('price', '0').strip()
+            stock_input = request.POST.get('stock', '0').strip()
+            image = request.FILES.get('image')
+
+            if not name:
+                messages.error(request, 'Products need to have a name.')
+                return redirect('dashboard')
+
+            try:
+                price = Decimal(price_input)
+                stock = int(stock_input)
+            except (InvalidOperation, ValueError):
+                messages.error(request, 'Invalid numbers for price and stock.')
+                return redirect('dashboard')
+
+            if price < 0 or stock < 0:
+                messages.error(request, 'Price and stock cannot be below 0.')
+                return redirect('dashboard')
+
+            Product.objects.create(
+                seller=request.user,
+                name=name,
+                image=image,
+                price=price,
+                stock=stock,
+                active=True,
+            )
+            messages.success(request, 'Product created.')
+            return redirect('dashboard')
+
+# settings
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+
+# project level urls
+from django.contrib import admin
+from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('cloth.urls')),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# shop page
+<h1>Shop</h1>
+<h2>Browse and search for products</h2>
+
+{% if products %}
+	<div class="heading">
+		{% for product in products %}
+			<div class="names">
+				{% if product.image %}
+					<img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+				{% endif %}
+				<h3>{{ product.name }}</h3>
+				<p>
+					Sold by:
+					{% if product.seller.first_name or product.seller.last_name %}
+						{{ product.seller.first_name }} {{ product.seller.last_name }}
+					{% else %}
+						{{ product.seller.username }}
+					{% endif %}
+				</p>
+				<p>Price: £{{ product.price }}</p>
+				<p>Stock: {{ product.stock }}</p>
+
+				{% if product.stock > 0 %}
+					<form method="POST" action="{% url 'add-to-cart' product.id %}">
+						{% csrf_token %}
+						<input class="number" type="number" name="quantity" min="1" value="1">
+						<button type="submit">Add to Cart</button>
+					</form>
+				{% else %}
+
+# shop css
+.names {
+	border: 1px solid #d9d9d9;
+	border-radius: 10px;
+	padding: 14px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.product-image {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	display: block;
+}
+
+.names img {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	display: block;
+}
+
+#farmers_shop page
+{% if products %}
+        <ul class="heading">
+            {% for product in products %}
+                <li class="names">
+                    {% if product.image %}
+                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <p>{{ product.name }} - ${{ product.price }} (Stock: {{ product.stock }})</p>
+                    {% if product.stock > 0 %}
+                        <form method="post" action="{% url 'add-to-cart' product.id %}">
+                            {% csrf_token %}
+                            <label for="quantity-{{ product.id }}">Quantity:</label>
+                            <input
+                                id="quantity-{{ product.id }}"
+                                name="quantity"
+                                type="number"
+                                min="1"
+                                max="{{ product.stock }}"
+                                class="number"
+                                value="1"
+                                required
+                            >
+
+#farmers shop css
+	overflow: hidden;
+}
+
+.product-image {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	display: block;
+}
+
+.names img {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	display: block;
+}
+
+#stock page
+<h2>Add Product</h2>
+<form class="create" method="POST" action="{% url 'dashboard' %}" enctype="multipart/form-data">
+	{% csrf_token %}
+	<input type="hidden" name="sent" value="create_product">
+	<input type="text" name="name" placeholder="Product name" required>
+	<input type="number" step="0.01" min="0" name="price" placeholder="Price" required>
+	<input type="number" name="stock" min="0" placeholder="Stock" required>
+	<input type="file" name="image" accept="image/*">
+	<button type="submit">Create Product</button>
+</form>
+
+<h2>Your Products</h2>
+{% if products %}
+	<div class="heading">
+		{% for product in products %}
+			<div class="names">
+				{% if product.image %}
+					<img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+				{% endif %}
+				<h3>{{ product.name }}</h3>
+				<p>Price: £{{ product.price }}</p>
+				<p>Current Stock: {{ product.stock }}</p>
+
+				<form class="update" method="POST" action="{% url 'dashboard' %}">
+					{% csrf_token %}
+					<input type="hidden" name="sent" value="update_stock">
+					<input type="hidden" name="product_id" value="{{ product.id }}">
+					<input class="input" type="number" min="0" name="stock" value="{{ product.stock }}" required>
+					<button type="submit">Update Stock</button>
+				</form>
+			</div>
+		{% endfor %}
+
+#stock page css
+	overflow: hidden;
+}
+
+.product-image {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	display: block;
+}
+
+.names img {
+	width: 100%;
+	max-width: 100%;
+	height: 180px;
+	object-fit: cover;
+	display: block;
+}

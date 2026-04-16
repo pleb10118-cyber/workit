@@ -1,0 +1,45 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/dashboard.css' %}">
+{% endblock head %}
+{% block content %}
+<h1>Seller Dashboard</h1>
+
+<h2>Add Product</h2>
+<form class="create" method="POST" action="{% url 'dashboard' %}" enctype="multipart/form-data">
+	{% csrf_token %}
+	<input type="hidden" name="sent" value="create_product">
+	<input type="text" name="name" placeholder="Product name" required>
+	<input type="number" step="0.01" min="0" name="price" placeholder="Price" required>
+	<input type="number" name="stock" min="0" placeholder="Stock" required>
+	<input type="file" name="image" accept="image/*">
+	<button type="submit">Create Product</button>
+</form>
+
+<h2>Your Products</h2>
+{% if products %}
+	<div class="heading">
+		{% for product in products %}
+			<div class="names">
+				{% if product.image %}
+					<img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+				{% endif %}
+				<h3>{{ product.name }}</h3>
+				<p>Price: £{{ product.price }}</p>
+				<p>Current Stock: {{ product.stock }}</p>
+
+				<form class="update" method="POST" action="{% url 'dashboard' %}">
+					{% csrf_token %}
+					<input type="hidden" name="sent" value="update_stock">
+					<input type="hidden" name="product_id" value="{{ product.id }}">
+					<input class="input" type="number" min="0" name="stock" value="{{ product.stock }}" required>
+					<button type="submit">Update Stock</button>
+				</form>
+			</div>
+		{% endfor %}
+	</div>
+{% else %}
+	<p>You have no products listed.</p>
+{% endif %}
+{% endblock content %}

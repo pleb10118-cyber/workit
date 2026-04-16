@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'cloth/styles/home.css' %}">
+{% endblock head %}
+{% block content %}
+<div class="points">
+	<h3>Loyalty Points</h3>
+	<p>0 pts</p>
+</div>
+<section>
+	<h1>Cole Cloth Shop</h1>
+	<p>Your everyday clothing shop for clean, comfortable, and reliable styles.</p>
+
+	<p>Start with our newest items, update your account details, or contact support if you need help.</p>
+
+	<p>
+		<a href="{% url 'shop' %}">Browse Shop</a> 
+		<a href="{% url 'account' %}">My Account</a> 
+	</p>
+</section>
+{% endblock content %}
